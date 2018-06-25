@@ -24,16 +24,16 @@ void	derivate_init(t_bresenham *str, t_bresenparms p)
 
 void	bresenhamdraw(t_bresenparms p)
 {
-	int			i;
+	unsigned int			i;
 	t_bresenham str;
 
-	i = 0x010101;
+	i = 0x00010101;
 	derivate_init(&str, p);
 	while (p.x0 != p.x1 || p.y0 != p.y1)
 	{
 		if (p.x0 >= 0 && p.y0 >= 0 && p.x0 < 2240 && p.y0 < 1310)
 			mlx_pixel_put(p.mlx_ptr, p.win_ptr, (int)p.x0, (int)p.y0,
-					i > 0xFFFFFF ? i : 0xFFFFFF);
+					i > 0xFFFF00FF ? 0xFFFF00FF : i);
 		str.e2 = str.err;
 		if (str.e2 > -str.dx)
 		{
@@ -45,7 +45,7 @@ void	bresenhamdraw(t_bresenparms p)
 			str.err += str.dx;
 			p.y0 += str.sy;
 		}
-		i += 0x050505;
+		i += 0x00050505;
 	}
 }
 

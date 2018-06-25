@@ -15,128 +15,132 @@
 #include "../includes/fdf.h"
 #include <stdio.h>
 
-void	print_data(double *data, int data_len)
+void		print_split(char **split)
 {
-	int i = 0;
+	int				i;
 
-	while(i < data_len)
+	i = 0;
+	while (split[i])
 	{
-		printf("%d ",(int)data[i]);
+		printf("%s ", split[i]);
 		i++;
 	}
 	printf("\n");
 }
 
-int		parseline(char *line, size_t len_line, double **data)
+void		print_space(t_map space)
 {
-	size_t			k;
+	size_t			i;
+
+	i = 0;
+	while (i < space.height * space.width)
+	{
+		//printf("(%d, %d, %d)", (int)space.coord[i].vector3d[0], (int)space.coord[i].vector3d[1], (int)space.coord[i].vector3d[2]);
+		i % space.width == space.width - 1 ? printf("\n") : printf(" ");
+		i++;
+	}
+}
+
+int			parseline(char *line, size_t *i, t_map *space, size_t y)
+{
+	size_t			x;
 	char			**split;
 
 	split = ft_strsplit(line, ' ');
-	k = -1;
-	if ((size_t)ft_count(split) != len_line)
+	x = -1;
+	if ((size_t)count(split) != space->width)
 	{
 		ft_display_error("line not correct size\n");
 		exit(0);
 	}
-	*data = ft_memalloc(len_line * sizeof(double));
-	while (++k < len_line)
+	while (++x < space->width)
 	{
-		(*data)[k] = ft_atoi(split[k]);
-		ft_memdel((void **)&split[k]);
+		space->coord[*i].vector3d[0] = (double)x;
+		space->coord[*i].vector3d[1] = (double)y;
+		space->coord[*i].vector3d[2] = ((double)ft_atoi(split[x])) * 0.1;
+		++(*i);
 	}
+	x = -1;
+	while (++x < space->width)
+		ft_memdel((void **)&split[x]);
 	ft_memdel((void **)&split);
 	return (0);
 }
 
-size_t	sizeofdata(char *line)
-{
-	size_t			i;
-	char			**tmp;
-
-	i = 0;
-	tmp = ft_strsplit(line, ' ');
-	while (tmp[i])
-	{
-		ft_memdel((void **)&tmp[i]);
-		i++;
-	}
-	ft_memdel((void **)&tmp);
-	return (i);
-}
-
-
-int		parsing(int fd, t_transition *premap)
+void		fill_data(t_map *space, int fd)
 {
 	char			*line;
+	size_t			num;
+	size_t			i;
 
-	get_next_line(fd, &line);
-	premap->nb_col = sizeofdata(line);
-	premap->data_len = premap->nb_col;
-	premap->data = ft_memalloc(premap->data_len * sizeof(double *));
-	parseline(line, premap->nb_col, premap->data);
-	ft_memdel((void **)&line);
-	premap->nb_line = 1;
+	num = 0;
+	i = 0;
 	while (get_next_line(fd, &line) > 0)
 	{
-		if (premap->nb_line == premap->data_len)
+		parseline(line, &i, space, num);
+		ft_memdel((void **)&line);
+		num++;
+	}
+	ft_memdel((void **)&line);
+	close(fd);
+}
+
+t_2dpoint	get_height_width(int fd, int i)
+{
+	t_2dpoint		point;
+	char			*line;
+	char			**list;
+
+	point.vector2d[0] = -1;
+	point.vector2d[1] = 0;
+	while (get_next_line(fd, &line) > 0)
+	{
+		list = ft_strsplit(line, ' ');
+		if (point.vector2d[0] == -1)
+			point.vector2d[0] = count(list);
+		else if (count(list) != point.vector2d[0])
 		{
-			premap->data = (double**)ft_realloc(premap->data, premap->data_len *
-					sizeof(double *), premap->data_len * 2 * sizeof(double *));
-			premap->data_len *= 2;
+			point.vector2d[0] = -1;
+			return (point);
 		}
-		parseline(line, premap->nb_col, premap->data + premap->nb_line);
-		premap->nb_line++;
+		point.vector2d[1]++;
+		i = -1;
+		while (list[++i])
+			ft_memdel((void **)&list[i]);
+		ft_memdel((void **)&list);
 		ft_memdel((void **)&line);
 	}
 	ft_memdel((void **)&line);
-	return(0);
+	return (point);
 }
 
-t_map	translation(t_transition premap)
+int			parsing(int fd, t_map *space, char *file)
 {
-	t_map			space;
-	size_t			i;
-	size_t			j;
-	size_t			k;
-
-	i = -1;
-	j = -1;
-	k = 0;
-	space.width = premap.nb_col;
-	space.height = premap.nb_line;
-	space.coord = ft_memalloc((size_t)(space.height *
-			space.width * sizeof(t_point)));
-	while (++i < space.height)
-	{
-		while (++j < space.width)
-		{
-			space.coord[k].vector3d[0] = (double)j;
-			space.coord[k].vector3d[1] = (double)i;
-			space.coord[k].vector3d[2] = -premap.data[i][j] * 0.1;
-			k++;
-		}
-		j = -1;
-	}
-	return (space);
-}
-
-t_map	mapcreation(int fd)
-{
-	t_transition	data;
-	t_map			space;
+	t_2dpoint		point;
 	int				i;
+	int				fd2;
 
 	i = 0;
-	parsing(fd, &data);
-	space = translation(data);
-	while (data.data[i])
+	point = get_height_width(fd, i);
+	if (point.vector2d[0] == -1)
+		return (0);
+	space->height = (size_t)point.vector2d[1];
+	space->width = (size_t)point.vector2d[0];
+	space->coord = ft_memalloc(space->width * space->height * sizeof(t_point));
+	close(fd);
+	if ((fd2 = open(file, O_RDONLY)) < 0 || is_directory(file) != -1)
 	{
-//		print_data(*data, len_line);
-		ft_memdel((void **)&data.data[i]);
-		i++;
+		ft_display_error("invalid file descriptor\n");
+		exit(EXIT_FAILURE);
 	}
-	if (!data.data)
-		ft_memdel((void **)&data.data);
+	fill_data(space, fd2);
+	return (0);
+}
+
+t_map		mapcreation(int fd, char *string)
+{
+	t_map			space;
+
+	parsing(fd, &space, string);
 	return (space);
 }

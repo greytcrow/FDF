@@ -13,6 +13,7 @@
 
 #include "../libft/includes/libft.h"
 #include "../includes/fdf.h"
+#include <stdio.h>
 
 size_t	space_gain(t_bresenparms p, t_transmap map2d, size_t i, size_t max)
 {
@@ -90,28 +91,28 @@ void	init_struct(t_bresenparms *p)
 int		main(int argc, char **argv)
 {
 	int				fd;
-	//t_transmap		twodmap;
+	t_transmap		twodmap;
 	t_bresenparms	p;
-	//t_map			spacedash;
+	t_map			spacedash;
 
 	if (argc == 1)
 		usage_case();
 	if ((fd = open(argv[1], O_RDONLY)) < 0 || is_directory(argv[1]) != -1 ||
-	argc > 2)
+		argc > 2)
 	{
 		ft_display_error("invalid file descriptor\n");
 		exit(EXIT_FAILURE);
 	}
-	p.space = mapcreation(fd);
-	/*init_struct(&p);
+	p.space = mapcreation(fd, argv[1]);
+	init_struct(&p);
 	spacedash = rotation_input(p.space, &p);
 	twodmap = projection(spacedash, p);
 	displaymap(twodmap, p);
 	ft_memdel((void **)&spacedash.coord);
-	ft_memdel((void **)&twodmap.coord2d);
 	mlx_string_put(p.mlx_ptr, p.win_ptr, 10, 15, 255, "use numpad/mousewheel");
 	mlx_mouse_hook(p.win_ptr, mouse_hook, &p);
 	mlx_hook(p.win_ptr, 2, 1L, hook_key, &p);
-	mlx_loop(p.mlx_ptr);*/
+	mlx_loop(p.mlx_ptr);
+	//ft_memdel((void **)&p.space);
 	return (0);
 }

@@ -21,14 +21,6 @@ typedef struct	s_matrix
 	double		matrix[3][3];
 }				t_matrix;
 
-typedef struct	s_transition
-{
-	size_t		nb_col;
-	size_t		nb_line;
-	size_t		data_len;
-	double		**data;
-}				t_transition;
-
 typedef struct	s_point
 {
 	double		vector3d[3];
@@ -95,11 +87,10 @@ void			ft_init_matrix(t_matrix *a);
 t_matrix		xrotation(t_matrix a, double angle);
 t_matrix		yrotation(t_matrix a, double angle);
 t_matrix		zrotation(t_matrix a, double angle);
-t_map			translation(t_transition premap);
-int				parsing(int fd, t_transition *premap);
+int				parsing(int fd, t_map *space,char *string);
 t_map			spacerotation(t_map space, double angle, char axis);
 void			bresenhamdraw(t_bresenparms p);
-t_map			mapcreation(int fd);
+t_map			mapcreation(int fd, char *);
 t_transmap		projection(t_map threed, t_bresenparms p);
 void			init_vector(t_point *a);
 t_point			mult_vector(t_matrix a, t_point b);
@@ -111,7 +102,7 @@ t_map			rotation_input(t_map space, t_bresenparms *t);
 int				displaymap(t_transmap map2d, t_bresenparms p);
 int				mouse_hook(int button, int x, int y, t_bresenparms *t);
 int				is_directory(char *accessdir);
-int				ft_count(char **tableau);
+int				count(char **tableau);
 void			usage_case(void);
 
 #endif

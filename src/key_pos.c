@@ -92,7 +92,7 @@ int		is_directory(char *accessdir)
 	return (fd);
 }
 
-int		ft_count(char **tableau)
+int		count(char **tableau)
 {
 	int				i;
 
