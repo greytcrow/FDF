@@ -57,7 +57,7 @@ int			parseline(char *line, size_t *i, t_map *space, size_t y)
 	{
 		space->coord[*i].vector3d[0] = (double)x;
 		space->coord[*i].vector3d[1] = (double)y;
-		space->coord[*i].vector3d[2] = ((double)ft_atoi(split[x])) * 0.1;
+		space->coord[*i].vector3d[2] = ((double)ft_atoi(split[x]));
 		++(*i);
 	}
 	x = -1;
@@ -85,7 +85,7 @@ void		fill_data(t_map *space, int fd)
 	close(fd);
 }
 
-t_2dpoint	get_height_width(int fd, int i)
+t_2dpoint	get_height_width(int fd)
 {
 	t_2dpoint		point;
 	char			*line;
@@ -101,14 +101,11 @@ t_2dpoint	get_height_width(int fd, int i)
 		else if (count(list) != point.vector2d[0])
 		{
 			point.vector2d[0] = -1;
+			free_data(line, list);
 			return (point);
 		}
 		point.vector2d[1]++;
-		i = -1;
-		while (list[++i])
-			ft_memdel((void **)&list[i]);
-		ft_memdel((void **)&list);
-		ft_memdel((void **)&line);
+		free_data(line,list);
 	}
 	ft_memdel((void **)&line);
 	return (point);
@@ -117,12 +114,10 @@ t_2dpoint	get_height_width(int fd, int i)
 int			parsing(int fd, t_map *space, char *file)
 {
 	t_2dpoint		point;
-	int				i;
 	int				fd2;
 
-	i = 0;
-	point = get_height_width(fd, i);
-	if (point.vector2d[0] == -1)
+	point = get_height_width(fd);
+	if (point.vector2d[0] == -1 || point.vector2d[0] == 0)
 		return (0);
 	space->height = (size_t)point.vector2d[1];
 	space->width = (size_t)point.vector2d[0];
@@ -134,13 +129,17 @@ int			parsing(int fd, t_map *space, char *file)
 		exit(EXIT_FAILURE);
 	}
 	fill_data(space, fd2);
-	return (0);
+	return (1);
 }
 
 t_map		mapcreation(int fd, char *string)
 {
 	t_map			space;
 
-	parsing(fd, &space, string);
+	if (!parsing(fd, &space, string))
+	{
+		ft_display_error("invalid map\n");
+		exit(EXIT_FAILURE);
+	}
 	return (space);
 }

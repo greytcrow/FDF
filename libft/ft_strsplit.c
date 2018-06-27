@@ -13,95 +13,64 @@
 
 #include "libft.h"
 
-static	size_t		get_nb_word(char const *s, char c)
-{
-	size_t		n;
-	size_t		i;
+#define IS_DEL(c, d) (c == d)
 
-	i = 0;
-	n = 0;
-	if (s[i] == '\0')
-		return (0);
-	while (s[i])
-	{
-		if (s[i] != c && s[i + 1] == c)
-			n++;
-		i++;
-	}
-	if (s[i - 1] != c)
-		n++;
-	return (n);
+static int        count_words(const char *s, char delimiter)
+{
+	int i;
+	int words;
+
+	i = -1;
+	words = 0;
+	while (s[++i])
+		if (((i != 0 && IS_DEL(s[i], delimiter) &&
+			  !IS_DEL(s[i - 1], delimiter)) ||
+			 (s[i + 1] == '\0' && !IS_DEL(s[i], delimiter))))
+			words++;
+	return (words);
 }
 
-static		void	feed_coord(char const *s, char c, size_t *coord)
+static char        *get_word(const char *s, char delimiter)
 {
-	size_t		i;
-	size_t		n;
+	int        i;
+	int        size;
+	char    *word;
 
-	i = 0;
-	n = 0;
-	if (s[i] != c)
+	i = -1;
+	size = 0;
+	while (s[++i] && !IS_DEL(s[i], delimiter))
+		size++;
+	word = ft_memalloc(sizeof(char) * (size + 1));
+	word[size] = '\0';
+	while (*s && !IS_DEL(*s, delimiter))
 	{
-		coord[n] = 0;
-		n++;
+		*word++ = *s;
+		s++;
 	}
-	while (s[i])
-	{
-		if (s[i] != c && s[i + 1] == c)
-			coord[n++] = i;
-		else if (s[i + 1] != c && s[i] == c)
-			coord[n++] = i + 1;
-		i++;
-	}
-	if (s[i - 1] != c)
-		coord[n] = i - 1;
+	return (word - size);
 }
 
-static	char		**empty_chain(char **split)
+char            **ft_strsplit(char const *s, char delimiter)
 {
-	split = (char **)ft_memalloc(sizeof(char *));
-	return (split);
-}
+	int        size;
+	char    **tab;
+	char    *str;
 
-static	char		**full_chain(char const *s, char **split, size_t *coord,
-	size_t n)
-{
-	size_t		i;
-	size_t		j;
-
-	i = 0;
-	j = 0;
-	while (i < n)
-	{
-		split[i] = ft_strsub(s, coord[j], coord[j + 1] - coord[j] + 1);
-		i++;
-		j += 2;
-	}
-	split[n] = NULL;
-	return (split);
-}
-
-char				**ft_strsplit(char const *s, char c)
-{
-	char		**split;
-	size_t		*coord;
-	size_t		n;
-
-	if (s == NULL)
+	if (!s)
 		return (NULL);
-	split = NULL;
-	n = get_nb_word(s, c);
-	if (n == 0)
-		empty_chain(split);
-	coord = (size_t *)malloc(sizeof(size_t) * (n * 2));
-	if (coord == NULL)
+	size = count_words(s, delimiter);
+	if (!(tab = ft_memalloc((size + 1) * sizeof(char*))))
 		return (NULL);
-	feed_coord(s, c, coord);
-	split = (char **)ft_memalloc(sizeof(char *) * (n + 1));
-	if (split == NULL)
-		return (NULL);
-	split[n] = NULL;
-	full_chain(s, split, coord, n);
-	ft_memdel((void **)&coord);
-	return (split);
+	tab[size] = 0;
+	str = (char *)s;
+	while (*str)
+	{
+		if (!IS_DEL(*str, delimiter))
+		{
+			*tab++ = get_word(str, delimiter);
+			str += ft_strlen(tab[-1]) - 1;
+		}
+		str++;
+	}
+	return (tab - size);
 }

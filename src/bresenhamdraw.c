@@ -24,16 +24,15 @@ void	derivate_init(t_bresenham *str, t_bresenparms p)
 
 void	bresenhamdraw(t_bresenparms p)
 {
-	unsigned int			i;
-	t_bresenham str;
+	unsigned int	i;
+	t_bresenham		str;
 
-	i = 0x00010101;
+	i = 0x59377C;
 	derivate_init(&str, p);
 	while (p.x0 != p.x1 || p.y0 != p.y1)
 	{
 		if (p.x0 >= 0 && p.y0 >= 0 && p.x0 < 2240 && p.y0 < 1310)
-			mlx_pixel_put(p.mlx_ptr, p.win_ptr, (int)p.x0, (int)p.y0,
-					i > 0xFFFF00FF ? 0xFFFF00FF : i);
+			mlx_pixel_put(p.mlx_ptr, p.win_ptr, (int)p.x0, (int)p.y0, i);
 		str.e2 = str.err;
 		if (str.e2 > -str.dx)
 		{
@@ -45,7 +44,6 @@ void	bresenhamdraw(t_bresenparms p)
 			str.err += str.dx;
 			p.y0 += str.sy;
 		}
-		i += 0x00050505;
 	}
 }
 
@@ -53,4 +51,15 @@ void	usage_case(void)
 {
 	ft_putstr("Usage :  ./fdf name.fdf\n");
 	exit(EXIT_FAILURE);
+}
+
+void	free_data(char *line,char **list)
+{
+	int				i;
+
+	i = -1;
+	while (list && list[++i])
+		ft_memdel((void **)&list[i]);
+	ft_memdel((void **)&list);
+	ft_memdel((void **)&line);
 }
