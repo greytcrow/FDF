@@ -15,26 +15,26 @@
 
 #define IS_DEL(c, d) (c == d)
 
-static int        count_words(const char *s, char delimiter)
+static int		count_words(const char *s, char delimiter)
 {
-	int i;
-	int words;
+	int			i;
+	int			words;
 
 	i = -1;
 	words = 0;
 	while (s[++i])
 		if (((i != 0 && IS_DEL(s[i], delimiter) &&
-			  !IS_DEL(s[i - 1], delimiter)) ||
-			 (s[i + 1] == '\0' && !IS_DEL(s[i], delimiter))))
+				!IS_DEL(s[i - 1], delimiter)) ||
+				(s[i + 1] == '\0' && !IS_DEL(s[i], delimiter))))
 			words++;
 	return (words);
 }
 
-static char        *get_word(const char *s, char delimiter)
+static char		*get_word(const char *s, char delimiter)
 {
-	int        i;
-	int        size;
-	char    *word;
+	int			i;
+	int			size;
+	char		*word;
 
 	i = -1;
 	size = 0;
@@ -50,11 +50,11 @@ static char        *get_word(const char *s, char delimiter)
 	return (word - size);
 }
 
-char            **ft_strsplit(char const *s, char delimiter)
+char			**ft_strsplit(char const *s, char delimiter)
 {
-	int        size;
-	char    **tab;
-	char    *str;
+	int			size;
+	char		**tab;
+	char		*str;
 
 	if (!s)
 		return (NULL);

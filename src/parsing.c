@@ -15,32 +15,6 @@
 #include "../includes/fdf.h"
 #include <stdio.h>
 
-void		print_split(char **split)
-{
-	int				i;
-
-	i = 0;
-	while (split[i])
-	{
-		printf("%s ", split[i]);
-		i++;
-	}
-	printf("\n");
-}
-
-void		print_space(t_map space)
-{
-	size_t			i;
-
-	i = 0;
-	while (i < space.height * space.width)
-	{
-		//printf("(%d, %d, %d)", (int)space.coord[i].vector3d[0], (int)space.coord[i].vector3d[1], (int)space.coord[i].vector3d[2]);
-		i % space.width == space.width - 1 ? printf("\n") : printf(" ");
-		i++;
-	}
-}
-
 int			parseline(char *line, size_t *i, t_map *space, size_t y)
 {
 	size_t			x;
@@ -57,7 +31,7 @@ int			parseline(char *line, size_t *i, t_map *space, size_t y)
 	{
 		space->coord[*i].vector3d[0] = (double)x;
 		space->coord[*i].vector3d[1] = (double)y;
-		space->coord[*i].vector3d[2] = ((double)ft_atoi(split[x]));
+		space->coord[*i].vector3d[2] = ((double)ft_atoi(split[x]) * 0.1);
 		++(*i);
 	}
 	x = -1;
@@ -105,7 +79,7 @@ t_2dpoint	get_height_width(int fd)
 			return (point);
 		}
 		point.vector2d[1]++;
-		free_data(line,list);
+		free_data(line, list);
 	}
 	ft_memdel((void **)&line);
 	return (point);

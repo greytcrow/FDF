@@ -16,6 +16,7 @@
 # include <string.h>
 # include "../mlx/mlx.h"
 # include "../libft/includes/libft.h"
+
 typedef struct	s_matrix
 {
 	double		matrix[3][3];
@@ -87,10 +88,10 @@ void			ft_init_matrix(t_matrix *a);
 t_matrix		xrotation(t_matrix a, double angle);
 t_matrix		yrotation(t_matrix a, double angle);
 t_matrix		zrotation(t_matrix a, double angle);
-int				parsing(int fd, t_map *space,char *string);
+int				parsing(int fd, t_map *space, char *string);
 t_map			spacerotation(t_map space, double angle, char axis);
 void			bresenhamdraw(t_bresenparms p);
-t_map			mapcreation(int fd, char *);
+t_map			mapcreation(int fd, char *string);
 t_transmap		projection(t_map threed, t_bresenparms p);
 void			init_vector(t_point *a);
 t_point			mult_vector(t_matrix a, t_point b);
@@ -104,6 +105,6 @@ int				mouse_hook(int button, int x, int y, t_bresenparms *t);
 int				is_directory(char *accessdir);
 int				count(char **tableau);
 void			usage_case(void);
-void	free_data(char *line,char **list);
+void			free_data(char *line, char **list);
 
 #endif

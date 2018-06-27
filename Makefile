@@ -69,7 +69,7 @@ $(LIBMLX):
 $(OBJ_PATH)/%.o: $(SRC_PATH)/%.c $(INC)
 	@ mkdir $(OBJ_PATH) 2> /dev/null || true
 	@ printf "\033[1mCompilation de \033[36m%-20s\033[37m\ten \033[32m%-20s\033[0m ✅\n" $< $@
-	@ $(CC) $(CC_FLAGS) $(INCLUDES) -c $< -o $@
+	@ $(CC) $(CC_FLAGS) -g $(INCLUDES) -c $< -o $@
 
 clean:
 	@ /bin/rm -rf $(OBJ_PATH)

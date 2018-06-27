@@ -113,6 +113,5 @@ int		main(int argc, char **argv)
 	mlx_mouse_hook(p.win_ptr, mouse_hook, &p);
 	mlx_hook(p.win_ptr, 2, 1L, hook_key, &p);
 	mlx_loop(p.mlx_ptr);
-	//ft_memdel((void **)&p.space);
 	return (0);
 }

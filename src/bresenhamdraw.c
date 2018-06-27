@@ -53,7 +53,7 @@ void	usage_case(void)
 	exit(EXIT_FAILURE);
 }
 
-void	free_data(char *line,char **list)
+void	free_data(char *line, char **list)
 {
 	int				i;
 
